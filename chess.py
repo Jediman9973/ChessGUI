@@ -252,4 +252,7 @@ def black_king_checked(board):
 
     return False
 
+def display_board(board):
+    for row in board:
+        print(" ".join(row))
 
