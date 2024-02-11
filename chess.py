@@ -101,6 +101,7 @@ def rook_legal(begin, end, color, board):
     return True
 
 
+
 def bishop_legal(begin, end, color, board):
     row_0 = begin[0]
     col_0 = begin[1]
@@ -203,7 +204,6 @@ def white_king_checked(board):
             begin = row, col
 
             if piece.islower():  # It's a black piece
-                #print(piece, begin)
 
                 if (piece == "p" and black_pawn_legal(begin, end, "black", board)) or \
                    (piece == "n" and knight_legal(begin, end, "black", board)) or \
@@ -238,7 +238,6 @@ def black_king_checked(board):
             begin = row, col
 
             if piece.isupper():  # It's a white piece
-                #print(piece, begin)
 
                 if (piece == "P" and white_pawn_legal(begin, end, "white", board)) or \
                    (piece == "N" and knight_legal(begin, end, "white", board)) or \
@@ -261,7 +260,8 @@ def display_board(board):
 def legal_moves(piece, begin, board):
 
     if board[begin[0]][begin[1]] != piece:
-        return False
+        return []
+
 
     lst = []
 
@@ -298,39 +298,44 @@ def bestmove(board):
     best_score = float('inf')  # Initialize best_score to positive infinity for minimization
     best_move = None
     depth = 4  # Starting depth for the minimax search
-    color = "black"
+
 
     board_copy = [row[:] for row in board]  # Deep copy of the board
 
     for i, row in enumerate(board_copy):
+
         for j, piece in enumerate(row):
             if piece.islower() and piece != ".":  # Only consider black pieces
+
                 begin = (i, j)
+
+
                 all_legal_moves = legal_moves(piece, begin, board_copy)
 
                 for move in all_legal_moves:
                     # Simulate the move
+
                     board_copy[begin[0]][begin[1]] = "."
                     board_copy[move[0]][move[1]] = piece
 
                     # Call minimax to evaluate the move
-                    score = minimax(board_copy, depth - 1, True)  # True indicates it's black's turn
+                    score = minimax(board_copy, depth - 1, False)  # True indicates it's black's turn, False white's
+
+                    board_copy = [row[:] for row in board]
+
 
                     # Update best_score and best_move based on the evaluation
                     if score < best_score:
                         best_score = score
                         best_move = (begin, move)
-                        print(best_move)
-                        print(best_score)
-                        print()
 
                     # Revert the move
-                    board_copy[begin[0]][begin[1]] = piece
-                    board_copy[move[0]][move[1]] = "."
+
 
     return best_move
 
 def minimax(board, depth, is_black_turn):
+
     if depth == 0:
         return score_board(board)  # Base case: return board evaluation
 
@@ -357,6 +362,7 @@ def minimax(board, depth, is_black_turn):
         best_score = float('-inf')
         for i, row in enumerate(board):
             for j, piece in enumerate(row):
+
                 if piece.isupper() and piece != ".":
                     begin = (i, j)
                     all_legal_moves = legal_moves(piece, begin, board)
@@ -373,25 +379,26 @@ def minimax(board, depth, is_black_turn):
         return best_score
 
 
+
 """
 board = [["."]*8 for _ in range(8)]
-board[7] = ["R", "N", "B", ".", "K", "B", "N", "R"]
-board[6] = ["P"]*8
-board[0] = ["r", "n", "b", "q", "k", "b", "n", "r"]
-board[1] = ["p"]*8
-board[2][0] = "Q"
-display_board(board)
 
-print(bestmove(board))
+#board[7] = ["R", "N", "B", "Q", "K", "B", "N", "R"]
+#board[6] = ["P"]*8
+board[4][4] = "P"
+board[6][1] = "P"
+board[1][0] = "p"
+#board[1] = ["p"]*8
+
+#board[0] = ["r", "n", "b", "q", "k", "b", "n", "r"]
+display_board(board)
+print()
+print(board[2][0])
 begin, end = bestmove(board)
 piece = board[begin[0]][begin[1]]
-
 board[begin[0]][begin[1]] = "."
-
 board[end[0]][end[1]] = piece
 
 display_board(board)
-#minimax(board)
 
-#print(legal_moves("P", (6,7), "white", board))
 """
